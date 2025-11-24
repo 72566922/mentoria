@@ -1,0 +1,183 @@
+body {
+    margin: 0;
+    background: #e5e5e5;
+    font-family: Arial;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+.logo {
+    padding: 20px;
+    font-size: 20px;
+    background: white;
+}
+
+.sidebar {
+    width: 240px;
+    background: white;
+    border-right: 1px solid #ccc;
+}
+
+.menu {
+    list-style: none;
+    padding: 0;
+}
+
+.menu li {
+    padding: 15px;
+    cursor: pointer;
+}
+
+.menu li:hover {
+    background: #f0f0f0;
+}
+
+.menu .active {
+    background: #dcdcdc;
+    border-radius: 5px;
+}
+
+.main {
+    flex: 1;
+    background: white;
+    margin: 20px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    padding: 15px;
+    border-bottom: 1px solid #ccc;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.view {
+    display: none;
+    padding: 20px;
+}
+
+.visible {
+    display: block;
+}
+
+.cards {
+    display: flex;
+    gap: 15px;
+}
+
+.card {
+    background: #fafafa;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.perfil-card {
+    display: flex;
+    gap: 20px;
+}
+
+.perfil-card img {
+    width: 140px;
+    height: 140px;
+    border-radius: 5px;
+}
+
+/* ---------------------
+   Comentarios
+-----------------------*/
+.comentario-box {
+    background: #f7f7f7;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.comentario-avatar {
+    width: 50px;
+    height: 50px;
+    background: #ddd;
+    border-radius: 4px; /* cuadrado */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+    color: #555;
+    font-weight: bold;
+}
+
+.comentario-content {
+    flex: 1;
+}
+
+.comentario-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.comentario-stars {
+    color: gold;
+    font-size: 15px;
+    margin-left: 10px;
+    letter-spacing: 2px;
+}
+
+.comentario-fecha {
+    font-size: 12px;
+    color: #555;
+}
+
+
+/* ---------------------
+   Calendario
+-----------------------*/
+.calendar-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.calendar-header button {
+    padding: 5px 10px;
+}
+
+.calendar {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+}
+
+.day {
+    background: #f4f4f4;
+    padding: 18px;
+    text-align: center;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+}
+
+.day:hover {
+    background: #e0e0e0;
+    cursor: pointer;
+}

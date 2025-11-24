@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Mentoría</title>
+    <link rel="stylesheet" th:href="@{/css/mentor.css}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2 class="logo">Plataforma de Mentoría</h2>
+
+            <ul class="menu">
+                <li onclick="showView('inicio')">Inicio</li>
+                <li onclick="showView('feedback')">Feedback</li>
+                <li onclick="showView('perfil')" class="active">Perfil</li>
+            </ul>
+        </aside>
+
+        <main class="main">
+
+            <!-- HEADER -->
+            <header class="header">
+                <span class="mentor-icon">👤 Mentor</span>
+            </header>
+
+            <!-- ====================== PERFIL ====================== -->
+            <section id="perfil" class="view visible">
+                <h1>Perfil del Mentor</h1>
+
+                <div class="perfil-card">
+                    <img th:src="@{/img/default-user.png}" alt="foto">
+
+                    <div class="perfil-info">
+                        <p><strong>Nombre completo:</strong>
+                            <span th:text="${usuario.nombre}">Nombre</span>
+                        </p>
+
+                        <p><strong>Correo electrónico:</strong>
+                            <span th:text="${usuario.email}">email</span>
+                        </p>
+
+                        <p><strong>Disponibilidad:</strong>
+                            <span th:text="${perfil.disponibilidad}">horario</span>
+                        </p>
+
+                        <p><strong>Especialidad:</strong>
+                            <span th:text="${perfil.especialidad.nombre}"></span>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ====================== DASHBOARD ====================== -->
+            <section id="inicio" class="view">
+
+                <h1>Dashboard del Mentor</h1>
+
+                <div class="cards">
+
+                    <div class="card">
+                        <p>Próximas sesiones</p>
+                        <h2 th:text="${sesionesConfirmadas.size()}">0</h2>
+                    </div>
+
+                    <div class="card">
+                        <p>Solicitudes pendientes</p>
+                        <h2 th:text="${sesionesPendientes.size()}">0</h2>
+                    </div>
+
+                    <div class="card">
+                        <p>Valoración promedio</p>
+                        <h2>⭐ 4.8</h2>
+                    </div>
+                </div>
+
+                <h2>Próximas sesiones</h2>
+
+                <table>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Aprendiz</th>
+                        <th>Tema</th>
+                    </tr>
+
+                    <tr th:each="s : ${sesionesConfirmadas}">
+                        <td th:text="${s.fechaHora}"></td>
+                        <td th:text="${s.aprendiz.usuario.nombre}"></td>
+                        <td th:text="${s.tema}"></td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- ====================== FEEDBACK ====================== -->
+            <section id="feedback" class="view">
+                <h1>Feedback para el Mentor</h1>
+
+                <h2>Comentarios de estudiantes</h2>
+
+                <div id="comentarios">
+
+                    <!-- Si no hay feedback -->
+                    <div th:if="${feedbacks.size() == 0}">
+                        <p>No tienes comentarios aún.</p>
+                    </div>
+
+                    <!-- Comentarios -->
+                    <div class="comentario-box" th:each="fb : ${feedbacks}">
+                        
+                        <div class="comentario-avatar"
+                            th:text="${fb.usuario.nombre.substring(0,1)}">
+                        </div>
+
+                        <div class="comentario-content">
+
+                            <div class="comentario-header">
+                                <strong th:text="${fb.usuario.nombre}">
+                                </strong>
+
+                                <span class="comentario-stars"
+                                    th:text="${'★'.repeat(fb.calificacion) + '☆'.repeat(5 - fb.calificacion)}">
+                                </span>
+                            </div>
+
+                            <p th:text="${fb.comentario}"></p>
+
+                            <span class="comentario-fecha"
+                                th:text="${#temporals.format(fb.sesion.fechaHora, 'dd/MM/yyyy')}">
+                            </span>
+
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script th:src="@{/js/app.js}"></script>
+
+</body>
+</html>

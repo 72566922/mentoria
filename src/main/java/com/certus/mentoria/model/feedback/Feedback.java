@@ -1,8 +1,8 @@
 package com.certus.mentoria.model.feedback;
 
 
-import com.certus.mentoria.model.user.PerfilAprendiz;
-import com.certus.mentoria.model.user.PerfilMentor;
+import com.certus.mentoria.model.sesion.Sesion;
+import com.certus.mentoria.model.user.Usuario;
 
 import jakarta.persistence.*;
 
@@ -17,12 +17,15 @@ public class Feedback {
     private String comentario;
 
     @ManyToOne
-    @JoinColumn(name = "mentor_id")
-    private PerfilMentor mentor;
+    @JoinColumn(name = "session_id")
+    private Sesion sesion;
 
     @ManyToOne
-    @JoinColumn(name = "aprendiz_id")
-    private PerfilAprendiz aprendiz;
+    @JoinColumn(name = "user_id")
+    private Usuario usuario;
+
+    public Feedback() {
+    }
 
     public Long getId() {
         return id;
@@ -48,37 +51,34 @@ public class Feedback {
         this.comentario = comentario;
     }
 
-    public PerfilMentor getMentor() {
-        return mentor;
+    public Sesion getSesion() {
+        return sesion;
     }
 
-    public void setMentor(PerfilMentor mentor) {
-        this.mentor = mentor;
+    public void setSesion(Sesion sesion) {
+        this.sesion = sesion;
     }
 
-    public PerfilAprendiz getAprendiz() {
-        return aprendiz;
+    public Usuario getUsuario() {
+        return usuario;
     }
 
-    public void setAprendiz(PerfilAprendiz aprendiz) {
-        this.aprendiz = aprendiz;
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
-    public Feedback() {
-    }
-
-    public Feedback(Long id, int calificacion, String comentario, PerfilMentor mentor, PerfilAprendiz aprendiz) {
+    public Feedback(Long id, int calificacion, String comentario, Sesion sesion, Usuario usuario) {
         this.id = id;
         this.calificacion = calificacion;
         this.comentario = comentario;
-        this.mentor = mentor;
-        this.aprendiz = aprendiz;
+        this.sesion = sesion;
+        this.usuario = usuario;
     }
 
     @Override
     public String toString() {
-        return "Feedback [id=" + id + ", calificacion=" + calificacion + ", comentario=" + comentario + ", mentor="
-                + mentor + ", aprendiz=" + aprendiz + "]";
+        return "Feedback [id=" + id + ", calificacion=" + calificacion + ", comentario=" + comentario + ", sesion="
+                + sesion + ", usuario=" + usuario + "]";
     }
 
     

@@ -1,0 +1,48 @@
+<section id="feedback" class="view">
+    <h1>Feedback para el Mentor</h1>
+
+    <h2>Comentarios de estudiantes</h2>
+
+    <div id="comentarios">
+
+        <!-- Si no hay feedback -->
+        <div th:if="${feedbacks.size() == 0}">
+            <p>No tienes comentarios aún.</p>
+        </div>
+
+        <!-- Comentarios -->
+        <div class="comentario-box" th:each="fb : ${feedbacks}">
+            
+            <!-- Avatar con inicial del nombre -->
+            <div class="comentario-avatar"
+                th:text="${fb.usuario.nombre.substring(0,1)}">
+                A
+            </div>
+
+            <div class="comentario-content">
+
+                <!-- Nombre y estrellas -->
+                <div class="comentario-header">
+                    <strong th:text="${fb.usuario.nombre}">
+                        Nombre del estudiante
+                    </strong>
+
+                    <!-- Estrellas dinámicas -->
+                    <span class="comentario-stars"
+                        th:text="${'★'.repeat(fb.calificacion) + '☆'.repeat(5 - fb.calificacion)}">
+                    </span>
+                </div>
+
+                <!-- Comentario -->
+                <p th:text="${fb.comentario}">Comentario aquí...</p>
+
+                <!-- Fecha real de la sesión -->
+                <span class="comentario-fecha"
+                    th:text="${#temporals.format(fb.sesion.fechaHora, 'dd/MM/yyyy')}">
+                </span>
+
+            </div>
+        </div>
+
+    </div>
+</section>

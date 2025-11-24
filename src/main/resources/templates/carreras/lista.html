@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="layout :: head"></head>
+<body>
+<header th:replace="layout :: header"></header>
+
+<main class="container mt-4">
+    <h2>Listado de Carreras</h2>
+    <a th:href="@{/carreras/nueva}" class="btn btn-primary mb-3">Nueva Carrera</a>
+
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="carrera : ${carreras}">
+            <td th:text="${carrera.id}"></td>
+            <td th:text="${carrera.nombre}"></td>
+            <td>
+                <a th:href="@{'/carreras/editar/' + ${carrera.id}}" class="btn btn-warning btn-sm">Editar</a>
+                <a th:href="@{'/carreras/eliminar/' + ${carrera.id}}" class="btn btn-danger btn-sm"
+                   onclick="return confirm('¿Seguro que deseas eliminar esta carrera?')">Eliminar</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+</body>
+</html>

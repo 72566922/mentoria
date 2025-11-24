@@ -1,11 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<!-- ✅ Usa el head del layout -->
+<head th:replace="layout :: head"></head>
+
 <body>
-    <h2>Hola mundo</h2>
+
+  <!-- ✅ Usa el header del layout -->
+  <header th:replace="layout :: header"></header>
+
+  <!-- ✅ Contenido propio -->
+  <main class="container-fluid p-0">
+
+    <section class="hero text-center text-light d-flex flex-column justify-content-center align-items-center"
+             style="background: linear-gradient(135deg, #0d6efd, #6610f2); min-height: 75vh;">
+      <div class="hero-overlay"></div>
+
+      <div class="hero-content position-relative">
+        <h1 class="fw-bold mb-3">Bienvenido al Sistema de Mentorías</h1>
+        <p class="lead mb-4">
+          Conecta aprendices con mentores y potencia tu desarrollo profesional.
+        </p>
+        <a th:href="@{/mentor}" class="btn btn-light btn-lg shadow-sm">Explorar Mentores</a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ✅ Usa el footer del layout -->
+  <footer th:replace="layout :: footer"></footer>
+
 </body>
 </html>

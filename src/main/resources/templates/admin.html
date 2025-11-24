@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<!-- ✅ Usa el head del layout -->
+<head th:replace="layout :: head"></head>
+
+<body>
+
+  <!-- ✅ Usa el header del layout -->
+  <header th:replace="layout :: header"></header>
+
+  <!-- ✅ Contenido propio -->
+  <main class="container-fluid p-0">
+
+    <!-- 🔹 Sección Hero -->
+    <section class="hero d-flex flex-column justify-content-center align-items-center text-center text-light"
+             style="background: linear-gradient(135deg, #0d6efd, #6610f2); min-height: 80vh; position: relative; overflow: hidden;">
+
+      <!-- Efecto de fondo animado -->
+      <div class="position-absolute w-100 h-100" 
+           style="background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.1), transparent 60%);
+                  animation: pulse 6s ease-in-out infinite;"></div>
+
+      <div class="position-relative z-1">
+        <h1 class="fw-bold mb-3 display-5">Área Administrativa</h1>
+        <p class="lead mb-4 fs-5">
+          Supervisa y gestiona los elementos clave de la plataforma de mentoría entre estudiantes.
+        </p>
+
+        <!-- 🔹 Botones principales -->
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+          <a th:href="@{/usuarios}" class="btn btn-light btn-lg px-4 shadow-sm fw-semibold">
+            <i class="bi bi-people-fill me-2"></i>Gestionar Usuarios
+          </a>
+          <a th:href="@{/carreras}" class="btn btn-outline-light btn-lg px-4 fw-semibold">
+            <i class="bi bi-mortarboard-fill me-2"></i>Gestionar Carreras
+          </a>
+          <a th:href="@{/especialidades}" class="btn btn-outline-light btn-lg px-4 fw-semibold">
+            <i class="bi bi-bookmark-check-fill me-2"></i>Gestionar Especialidades
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 🔹 Panel de Control (Resumen general) -->
+    <section class="py-5 bg-light text-center">
+      <div class="container">
+        <h2 class="fw-bold mb-4 text-primary">Panel de Control</h2>
+        <p class="mb-5 text-muted">
+          Desde este panel puedes crear, editar y supervisar todos los registros que conforman el ecosistema de mentoría.
+        </p>
+
+        <div class="row justify-content-center g-4">
+
+          <!-- Usuarios -->
+          <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-4 h-100">
+              <div class="card-body">
+                <i class="bi bi-person-gear display-5 text-primary mb-3"></i>
+                <h5 class="card-title fw-bold">Usuarios</h5>
+                <p class="text-muted">Administra las cuentas y roles de los mentores, aprendices y administradores.</p>
+                <a th:href="@{/usuarios}" class="btn btn-outline-primary btn-sm mt-2">Ir a Usuarios</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carreras y Especialidades -->
+          <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-4 h-100">
+              <div class="card-body">
+                <i class="bi bi-diagram-3-fill display-5 text-primary mb-3"></i>
+                <h5 class="card-title fw-bold">Carreras y Especialidades</h5>
+                <p class="text-muted">Gestiona las áreas académicas disponibles para los mentores.</p>
+                <div class="d-flex justify-content-center gap-2 mt-2">
+                  <a th:href="@{/carreras}" class="btn btn-outline-primary btn-sm">Carreras</a>
+                  <a th:href="@{/especialidades}" class="btn btn-outline-primary btn-sm">Especialidades</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sesiones -->
+          <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-4 h-100">
+              <div class="card-body">
+                <i class="bi bi-calendar-check display-5 text-primary mb-3"></i>
+                <h5 class="card-title fw-bold">Sesiones de Mentoría</h5>
+                <p class="text-muted">Supervisa las sesiones agendadas, completadas o canceladas por los usuarios.</p>
+                <a th:href="@{/sesiones}" class="btn btn-outline-primary btn-sm mt-2">Ver Sesiones</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feedback -->
+          <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-4 h-100">
+              <div class="card-body">
+                <i class="bi bi-star-half display-5 text-primary mb-3"></i>
+                <h5 class="card-title fw-bold">Feedback y Calificaciones</h5>
+                <p class="text-muted">Consulta y modera las valoraciones realizadas por los aprendices sobre sus mentores.</p>
+                <a th:href="@{/feedback}" class="btn btn-outline-primary btn-sm mt-2">Ver Feedback</a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ✅ Usa el footer del layout -->
+  <footer th:replace="layout :: footer"></footer>
+
+  <!-- 🔹 Animación CSS -->
+  <style>
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.1); }
+    }
+  </style>
+
+</body>
+</html>

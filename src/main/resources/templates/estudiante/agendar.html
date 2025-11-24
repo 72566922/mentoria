@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="estudiante/layout :: head"></head>
+
+<body>
+<div class="layout">
+    <aside th:replace="estudiante/layout :: sidebar"></aside>
+
+    <div class="contenido">
+        <header th:replace="estudiante/layout :: header"></header>
+
+        <main>
+            <section>
+                <h2>Agendar Sesión</h2>
+                <form th:action="@{/estudiante/agendar}" method="post">
+                    <label>Seleccionar Mentor:</label>
+                    <select name="mentorId">
+                        <option value="">-- Selecciona --</option>
+                        <option th:each="mentor : ${mentores}" th:value="${mentor.id}" th:text="${mentor.usuario.nombre}"></option>
+                    </select>
+
+                    <button type="submit">Agendar</button>
+                </form>
+            </section>
+        </main>
+    </div>
+</div>
+</body>
+</html>

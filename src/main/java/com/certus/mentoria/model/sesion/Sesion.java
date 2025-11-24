@@ -7,7 +7,6 @@ import com.certus.mentoria.model.user.PerfilMentor;
 
 import jakarta.persistence.*;
 
-
 @Entity
 public class Sesion {
 
@@ -18,7 +17,7 @@ public class Sesion {
     private LocalDateTime fechaHora;
 
     @Enumerated(EnumType.STRING)
-    private Estado estado;  // ← ahora usa el enum correctamente
+    private Estado estado; // ← ahora usa el enum correctamente
 
     @ManyToOne
     @JoinColumn(name = "mentor_id")
@@ -27,6 +26,17 @@ public class Sesion {
     @ManyToOne
     @JoinColumn(name = "aprendiz_id")
     private PerfilAprendiz aprendiz;
+
+    @Column(nullable = false)
+    private String tema;
+
+    public String getTema() {
+        return tema;
+    }
+
+    public void setTema(String tema) {
+        this.tema = tema;
+    }
 
     public Long getId() {
         return id;
@@ -71,19 +81,22 @@ public class Sesion {
     public Sesion() {
     }
 
-    public Sesion(Long id, LocalDateTime fechaHora, Estado estado, PerfilMentor mentor, PerfilAprendiz aprendiz) {
+    public Sesion(Long id, LocalDateTime fechaHora, Estado estado, PerfilMentor mentor, PerfilAprendiz aprendiz,
+            String tema) {
         this.id = id;
         this.fechaHora = fechaHora;
         this.estado = estado;
         this.mentor = mentor;
         this.aprendiz = aprendiz;
+        this.tema = tema;
     }
 
     @Override
     public String toString() {
         return "Sesion [id=" + id + ", fechaHora=" + fechaHora + ", estado=" + estado + ", mentor=" + mentor
-                + ", aprendiz=" + aprendiz + "]";
+                + ", aprendiz=" + aprendiz + ", tema=" + tema + "]";
     }
 
     
+
 }

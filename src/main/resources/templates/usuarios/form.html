@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head th:replace="layout :: head"></head>
+
+<body>
+    <header th:replace="layout :: header"></header>
+
+    <main class="container mt-4">
+        <h2 th:text="${usuario.id != null ? 'Editar Usuario' : 'Nuevo Usuario'}"></h2>
+
+        <form th:action="@{/usuarios/guardar}" th:object="${usuario}" method="post">
+            <input type="hidden" th:field="*{id}" />
+
+            <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <input type="text" th:field="*{nombre}" class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" th:field="*{email}" class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Contraseña</label>
+                <input type="password" th:field="*{password}" class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Roles</label>
+                <div th:each="rol : ${roles}">
+                    <input type="checkbox" name="rolesIds" th:value="${rol.id}"
+                        th:checked="${usuario.id == null and rol.nombre == 'APRENDIZ' or usuario.roles.contains(rol)}" />
+                    <label th:text="${rol.nombre}"></label><br />
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-success">Guardar</button>
+            <a th:href="@{/usuarios}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </main>
+
+</body>
+
+</html>
