@@ -44,23 +44,32 @@ public class EstudianteController {
 
     // 🏠 Página principal del estudiante (dashboard)
     @GetMapping("/inicio")
-    public String inicioEstudiante(Model model) {
-        // Por ahora, usuario fijo con id 7
-        Usuario usuario = usuarioRepository.findById(3L).orElse(null);
+    public String inicioEstudiante(Model model, Principal principal) {
+
+        // Obtener email del usuario logueado
+        String email = principal.getName();
+
+        // Buscar usuario por email
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
         model.addAttribute("usuario", usuario);
+
+        // Obtener id dinámico
+        Long userId = usuario.getId();
 
         // Lista de mentores disponibles
         List<PerfilMentor> mentores = perfilMentorRepository.findAllMentores();
         model.addAttribute("mentores", mentores);
 
-        // Sesiones agendadas del aprendiz
-        List<Sesion> sesiones = sesionRepository.findByAprendizUsuarioId(3L);
+        // Sesiones del usuario logeado
+        List<Sesion> sesiones = sesionRepository.findByAprendizUsuarioId(userId);
         model.addAttribute("sesiones", sesiones);
 
-        // Objeto vacío para formulario
+        // Objeto vacío para el formulario
         model.addAttribute("sesion", new Sesion());
 
-        String nombreUsuario = usuario != null ? usuario.getNombre() : "Aprendiz";
+        String nombreUsuario = usuario.getNombre() != null ? usuario.getNombre() : "Aprendiz";
         model.addAttribute("titulo", "Bienvenido, " + nombreUsuario);
 
         return "estudiante/inicio";
@@ -83,8 +92,14 @@ public class EstudianteController {
 
     // 🧾 Mis mentorías
     @GetMapping("/mis_mentorias")
-    public String misMentorias(Model model) {
-        List<Sesion> sesiones = sesionRepository.findByAprendizUsuarioId(7L);
+    public String misMentorias(Model model, Principal principal) {
+
+        String email = principal.getName();
+        Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow();
+        Long userId = usuario.getId();
+
+        List<Sesion> sesiones = sesionRepository.findByAprendizUsuarioId(userId);
+
         model.addAttribute("sesiones", sesiones);
         model.addAttribute("titulo", "Mis Mentorías");
         return "estudiante/mis_mentorias";
@@ -103,17 +118,18 @@ public class EstudianteController {
             @RequestParam("mentorId") Long mentorId,
             @RequestParam("tema") String tema,
             @RequestParam("fecha") String fecha,
-            @RequestParam("hora") String hora) {
+            @RequestParam("hora") String hora,
+            Principal principal) {
+
+        // Usuario logeado
+        String email = principal.getName();
+        Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow();
+        PerfilAprendiz aprendiz = perfilAprendizRepository.findByUsuario(usuario);
 
         PerfilMentor mentor = perfilMentorRepository.findById(mentorId).orElseThrow();
 
-        // Por ahora se asume aprendiz fijo (usuario 7)
-        Usuario usuario = usuarioRepository.findById(7L).orElseThrow();
-        PerfilAprendiz aprendiz = perfilAprendizRepository.findByUsuario(usuario);
-
         LocalDateTime fechaHora = LocalDateTime.parse(fecha + "T" + hora);
 
-        // Crear y guardar sesión
         Sesion sesion = new Sesion();
         sesion.setMentor(mentor);
         sesion.setAprendiz(aprendiz);
@@ -125,4 +141,5 @@ public class EstudianteController {
 
         return "redirect:/estudiante/mis_mentorias";
     }
+
 }

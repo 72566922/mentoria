@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Iniciar Sesión</title>
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+
+<div class="card">
+    <h2>Iniciar Sesión</h2>
+
+    <a class="google-btn" href="/oauth2/authorization/google">
+        <img src="https://www.gstatic.com/images/branding/product/1x/gsa_64dp.png" class="google-icon">
+        Iniciar con Google
+    </a>
+
+    <p th:if="${param.logout}" class="msg logout">Sesión cerrada correctamente</p>
+</div>
+
+</body>
+</html>

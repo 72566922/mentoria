@@ -1,0 +1,63 @@
+/* Fondo moderno y centrado */
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #4E9AF1, #6AE5C7);
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Tarjeta principal */
+.card {
+    background: white;
+    padding: 35px 45px;
+    border-radius: 15px;
+    text-align: center;
+    width: 340px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+
+.card h2 {
+    margin-bottom: 25px;
+    font-size: 24px;
+    color: #333;
+}
+
+/* Botón de Google */
+.google-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: white;
+    color: #444;
+    border: 1px solid #ccc;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: 0.25s ease;
+}
+
+.google-btn:hover {
+    border-color: #999;
+    background: #f5f5f5;
+}
+
+/* Icono de Google */
+.google-icon {
+    width: 24px;
+    height: 24px;
+}
+
+/* Mensajes */
+.msg {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.logout {
+    color: #198754;
+}

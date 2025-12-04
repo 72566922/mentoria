@@ -17,9 +17,10 @@
             <h2 class="logo">Plataforma de Mentoría</h2>
 
             <ul class="menu">
-                <li onclick="showView('inicio')">Inicio</li>
-                <li onclick="showView('feedback')">Feedback</li>
+                <li ><a th:href="@{/}">Inicio</a></li>
+                <li onclick="showView('inicio')">Sesiones</li>
                 <li onclick="showView('perfil')" class="active">Perfil</li>
+                <li onclick="showView('feedback')">Feedback</li>
             </ul>
         </aside>
 
