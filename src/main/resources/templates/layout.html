@@ -25,8 +25,22 @@
           <li class="nav-item"><a class="nav-link" th:href="@{/}">Inicio</a></li>
           <li class="nav-item"><a class="nav-link" th:href="@{/admin}">Admin</a></li>
           <li class="nav-item"><a class="nav-link" th:href="@{/estudiante/inicio}">Aprendiz</a></li>
-          <li class="nav-item"><a class="nav-link" th:href="@{/login}">Iniciar sesión</a></li>
-          <li class="nav-item"><a class="nav-link" th:href="@{/registro}">Registrarse</a></li>
+
+          <!-- Si el usuario está autenticado -->
+          <li class="nav-item" th:if="${user != null}">
+            <span class="nav-link" th:text="${user.fullName}">Nombre Usuario</span>
+          </li>
+          <li class="nav-item" th:if="${user != null}">
+            <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
+          </li>
+
+          <!-- Si el usuario no está autenticado -->
+          <li class="nav-item" th:if="${user == null}">
+            <a class="nav-link" th:href="@{/login}">Iniciar sesión</a>
+          </li>
+          <li class="nav-item" th:if="${user == null}">
+            <a class="nav-link" th:href="@{/registro}">Registrarse</a>
+          </li>
         </ul>
       </div>
     </div>

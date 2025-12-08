@@ -4,12 +4,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.certus.mentoria.model.user.Rol;
 import com.certus.mentoria.model.user.Usuario;
@@ -17,7 +18,7 @@ import com.certus.mentoria.repository.RolRepository;
 import com.certus.mentoria.repository.UsuarioRepository;
 
 @Service
-public class CustomOAuth2UserService extends DefaultOAuth2UserService {
+public class CustomOAuth2UserService extends OidcUserService {
 
     private final UsuarioRepository usuarioRepo;
     private final RolRepository rolRepo;
@@ -27,53 +28,63 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         this.rolRepo = rolRepo;
     }
 
+    @Transactional
     @Override
-    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+    public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
 
-        OAuth2User oAuth2User = super.loadUser(userRequest);
+        System.out.println("✅✅✅ CustomOAuth2UserService EJECUTÁNDOSE ✅✅✅");
 
-        // Datos básicos que llegan desde Google
-        String email = oAuth2User.getAttribute("email");
-        String nombre = oAuth2User.getAttribute("name");
+        OidcUser oidcUser = super.loadUser(userRequest);
+
+        String email = oidcUser.getEmail();
+        String nombre = oidcUser.getFullName();
 
         if (email == null) {
-            throw new OAuth2AuthenticationException("Google no devolvió un email válido");
+            throw new OAuth2AuthenticationException("Google no devolvió el email");
         }
 
-        // Buscar si ya existe
+        System.out.println("🟡 Usuario GOOGLE: " + email);
+
         Usuario usuario = usuarioRepo.findByEmail(email).orElse(null);
 
-        // Si no existe → lo creamos
+        // ✅ SI NO EXISTE → SE CREA
         if (usuario == null) {
-            usuario = new Usuario();
-            usuario.setEmail(email);
-            usuario.setNombre(nombre);
-            usuario.setPassword(null); // No se usa con OAuth
+            System.out.println("🟢 Usuario NO existe. Creando...");
 
-            // Asignar rol por defecto
-            Rol rolUsuario = rolRepo.findByNombre("ROLE_USER");
-            if (rolUsuario == null) {
-                throw new RuntimeException("ERROR: No existe el rol ROLE_USER en la base de datos");
+            usuario = new Usuario();
+            usuario.setNombre(nombre);
+            usuario.setEmail(email);
+            usuario.setPassword("{noop}OAUTH");
+
+            Rol rolAprendiz = rolRepo.findByNombre("APRENDIZ");
+
+            if (rolAprendiz == null) {
+                throw new OAuth2AuthenticationException(
+                        "ERROR: El rol 'APRENDIZ' no existe en la base de datos");
             }
 
             Set<Rol> roles = new HashSet<>();
-            roles.add(rolUsuario);
+            roles.add(rolAprendiz);
             usuario.setRoles(roles);
 
             usuarioRepo.save(usuario);
+
+            System.out.println("✅ Usuario GOOGLE guardado correctamente en BD");
+
+        } else {
+            System.out.println("🔵 Usuario ya existe en BD");
         }
 
-        // Convertir los roles a autoridades de Spring Security
+        // ✅ CONVERTIR ROLES A AUTHORITIES
         Set<SimpleGrantedAuthority> authorities = new HashSet<>();
         for (Rol rol : usuario.getRoles()) {
-            authorities.add(new SimpleGrantedAuthority(rol.getNombre()));
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + rol.getNombre()));
         }
 
-        // Devolver usuario autenticado a Spring Security
-        return new DefaultOAuth2User(
+        return new DefaultOidcUser(
                 authorities,
-                oAuth2User.getAttributes(),
-                "email" // atributo usado como identificador
+                oidcUser.getIdToken(),
+                oidcUser.getUserInfo()
         );
     }
 }

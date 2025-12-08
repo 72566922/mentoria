@@ -13,15 +13,13 @@ public class Usuario {
     private Long id;
 
     private String nombre;
+    @Column(unique = true)
     private String email;
+
     private String password; // ✅ cambiado de 'contraseña' a 'password'
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "usuario_rol",
-        joinColumns = @JoinColumn(name = "usuario_id"),
-        inverseJoinColumns = @JoinColumn(name = "rol_id")
-    )
+    @JoinTable(name = "usuario_rol", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "rol_id"))
     private Set<Rol> roles = new HashSet<>();
 
     // 🔹 Constructores
@@ -80,7 +78,6 @@ public class Usuario {
     // 🔹 toString
     @Override
     public String toString() {
-        return "Usuario [id=" + id + ", nombre=" + nombre + ", email=" + email + ", password=" + password
-                + ", roles=" + roles + "]";
+        return "Usuario [id=" + id + ", nombre=" + nombre + ", email=" + email + ", roles=" + roles + "]";
     }
 }

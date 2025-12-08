@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,8 @@ import com.certus.mentoria.repository.PerfilAprendizRepository;
 import com.certus.mentoria.repository.PerfilMentorRepository;
 import com.certus.mentoria.repository.SesionRepository;
 import com.certus.mentoria.repository.UsuarioRepository;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @Controller
 @RequestMapping("/estudiante")
@@ -44,12 +47,14 @@ public class EstudianteController {
 
     // 🏠 Página principal del estudiante (dashboard)
     @GetMapping("/inicio")
-    public String inicioEstudiante(Model model, Principal principal) {
+    public String inicioEstudiante(Model model, @AuthenticationPrincipal OAuth2User principal) {
+        // Obtener el correo electrónico desde el OAuth2User
+        String email = principal.getAttribute("email");
 
-        // Obtener email del usuario logueado
-        String email = principal.getName();
+        // Imprimir el correo para depurar
+        System.out.println("Correo electrónico que se está buscando: " + email);
 
-        // Buscar usuario por email
+        // Buscar usuario por email en la base de datos
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 

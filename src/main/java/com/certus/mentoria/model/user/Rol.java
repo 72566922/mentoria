@@ -2,7 +2,6 @@ package com.certus.mentoria.model.user;
 
 import jakarta.persistence.*;
 
-
 @Entity
 
 public class Rol {
@@ -42,8 +41,8 @@ public class Rol {
         this.nombre = nombre;
     }
 
-    
-    
+    public Rol(String nombre) {
+        this.nombre = nombre;
+    }
 
 }
-

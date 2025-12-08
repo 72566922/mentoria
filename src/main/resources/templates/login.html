@@ -3,18 +3,43 @@
 <head>
     <title>Iniciar Sesión</title>
     <link rel="stylesheet" href="/css/login.css">
+    <style>
+        .msg {
+            margin-top: 20px;
+            font-size: 14px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .logout {
+            color: #fff;
+            background-color: #198754;
+            border: 1px solid #155724;
+        }
+
+        .error {
+            color: #fff;
+            background-color: #dc3545;
+            border: 1px solid #c82333;
+        }
+    </style>
 </head>
 <body>
 
 <div class="card">
     <h2>Iniciar Sesión</h2>
 
-    <a class="google-btn" href="/oauth2/authorization/google">
+    <!-- Mensaje de logout exitoso -->
+    <p th:if="${logoutMessage}" class="msg logout" th:text="${logoutMessage}"></p>
+
+    <!-- Mensaje de error si no se cerró correctamente -->
+    <p th:if="${param.error}" class="msg error">Error al cerrar sesión. Intenta nuevamente.</p>
+
+    <a class="google-btn" href="/oauth2/authorization/google?prompt=select_account">
         <img src="https://www.gstatic.com/images/branding/product/1x/gsa_64dp.png" class="google-icon">
         Iniciar con Google
     </a>
-
-    <p th:if="${param.logout}" class="msg logout">Sesión cerrada correctamente</p>
 </div>
 
 </body>
