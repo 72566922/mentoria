@@ -51,7 +51,7 @@ function prevMonth() {
     renderCalendar();
 }
 
-renderCalendar();
+//renderCalendar();
 
 /* -------------------------
    Feedback dinámico

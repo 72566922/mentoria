@@ -4,20 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plataforma de Mentoría</title>
+    <meta name="description" content="Plataforma de Mentoría - Panel de Mentor">
+    <title>Plataforma de Mentoría | Panel Mentor</title>
     <link rel="stylesheet" th:href="@{/css/mentor.css}">
 </head>
 
 <body>
-
     <div class="container">
 
         <!-- Sidebar -->
         <aside class="sidebar">
             <h2 class="logo">Plataforma de Mentoría</h2>
-
             <ul class="menu">
-                <li ><a th:href="@{/}">Inicio</a></li>
+                <a th:href="@{/}"><li>Inicio</li></a>
                 <li onclick="showView('inicio')">Sesiones</li>
                 <li onclick="showView('perfil')" class="active">Perfil</li>
                 <li onclick="showView('feedback')">Feedback</li>
@@ -31,49 +30,54 @@
                 <span class="mentor-icon">👤 Mentor</span>
             </header>
 
-            <!-- ====================== PERFIL ====================== -->
+            <!-- PERFIL -->
             <section id="perfil" class="view visible">
                 <h1>Perfil del Mentor</h1>
-
                 <div class="perfil-card">
-                    <img th:src="@{/img/default-user.png}" alt="foto">
-
+                    <div class="perfil-foto-container">
+                        <img th:src="${perfil.fotoPerfil != null ? perfil.fotoPerfil : '/img/default-user.png'}" 
+                             alt="Foto de perfil del mentor" class="perfil-foto">
+                        
+                        <form th:action="@{/mentor/subirFoto}" method="post" enctype="multipart/form-data" class="form-subir-foto">
+                            <input type="file" name="foto" accept="image/*" required>
+                            <button type="submit" class="btn-subir">Cambiar Foto</button>
+                        </form>
+                    </div>
+                    
                     <div class="perfil-info">
                         <p><strong>Nombre completo:</strong>
-                            <span th:text="${usuario.nombre}">Nombre</span>
-                        </p>
-
+                            <span th:text="${usuario.nombre}">Nombre</span></p>
                         <p><strong>Correo electrónico:</strong>
-                            <span th:text="${usuario.email}">email</span>
-                        </p>
-
+                            <span th:text="${usuario.email}">email</span></p>
                         <p><strong>Disponibilidad:</strong>
-                            <span th:text="${perfil.disponibilidad}">horario</span>
-                        </p>
-
+                            <span th:text="${perfil.disponibilidad}">horario</span></p>
                         <p><strong>Especialidad:</strong>
-                            <span th:text="${perfil.especialidad.nombre}"></span>
-                        </p>
+                            <span th:text="${perfil.especialidad.nombre}">Especialidad</span></p>
                     </div>
                 </div>
             </section>
 
-            <!-- ====================== DASHBOARD ====================== -->
+            <!-- DASHBOARD -->
             <section id="inicio" class="view">
-
                 <h1>Dashboard del Mentor</h1>
 
                 <div class="cards">
-
-                    <div class="card">
+                    <button class="card btn-amarillo-card" onclick="mostrarTabla('confirmada')">
                         <p>Próximas sesiones</p>
-                        <h2 th:text="${sesionesConfirmadas.size()}">0</h2>
-                    </div>
-
-                    <div class="card">
+                        <h2 th:text="${sesionesPorEstado.get('confirmada') != null ? sesionesPorEstado.get('confirmada').size() : 0}">0</h2>
+                    </button>
+                    <button class="card btn-amarillo-card" onclick="mostrarTabla('pendiente')">
                         <p>Solicitudes pendientes</p>
-                        <h2 th:text="${sesionesPendientes.size()}">0</h2>
-                    </div>
+                        <h2 th:text="${sesionesPorEstado.get('pendiente') != null ? sesionesPorEstado.get('pendiente').size() : 0}">0</h2>
+                    </button>
+                    <button class="card btn-amarillo-card" onclick="mostrarTabla('cancelada')">
+                        <p>Sesiones canceladas</p>
+                        <h2 th:text="${sesionesPorEstado.get('cancelada') != null ? sesionesPorEstado.get('cancelada').size() : 0}">0</h2>
+                    </button>
+                    <button class="card btn-amarillo-card" onclick="mostrarTabla('completada')">
+                        <p>Sesiones completadas</p>
+                        <h2 th:text="${sesionesPorEstado.get('completada') != null ? sesionesPorEstado.get('completada').size() : 0}">0</h2>
+                    </button>
 
                     <div class="card">
                         <p>Valoración promedio</p>
@@ -81,63 +85,84 @@
                     </div>
                 </div>
 
-                <h2>Próximas sesiones</h2>
+                <!-- Tablas dinámicas -->
+                <div th:each="entry : ${sesionesPorEstado}">
+                    <h2 th:text="${entry.key}" th:id="'titulo-' + ${entry.key}" style="text-transform: capitalize;"></h2>
+                    <table th:id="'tabla-' + ${entry.key}" class="tabla-sesiones" th:style="'display: ' + (${entry.key} == 'confirmadas' ? 'table' : 'none')">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Aprendiz</th>
+                                <th>Tema</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="s : ${entry.value}">
+                                <td th:text="${#temporals.format(s.fechaHora,'yyyy-MM-dd HH:mm')}"></td>
+                                <td class="aprendiz-cell">
+                                    <div th:if="${s.aprendiz.fotoPerfil != null}" class="aprendiz-foto-mini">
+                                        <img th:src="${s.aprendiz.fotoPerfil}" 
+                                             th:alt="${s.aprendiz.usuario.nombre}" class="aprendiz-foto">
+                                    </div>
+                                    <div th:unless="${s.aprendiz.fotoPerfil != null}" class="aprendiz-avatar-mini"
+                                         th:text="${s.aprendiz.usuario.nombre.substring(0,1)}"></div>
+                                    <span class="aprendiz-nombre" th:text="${s.aprendiz.usuario.nombre}"></span>
+                                </td>
+                                <td>
+                                    <span th:each="t, stat : ${s.temas}"
+                                        th:text="${t.nombre + (stat.last ? '' : ', ')}"></span>
+                                </td>
+                                <td>
+                                    <form th:action="@{/mentor/cambiarEstado}" method="post" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                                        <input type="hidden" name="sesionId" th:value="${s.id}">
+                                        <select name="nuevoEstado" style="padding: 8px 12px; border-radius: 6px; border: 2px solid #e0e0e0; background: white; cursor: pointer; font-size: 13px; font-weight: 500;">
+                                            <option th:each="e : ${T(com.certus.mentoria.model.sesion.Estado).values()}"
+                                                th:value="${e}" th:text="${e}" th:selected="${e == s.estado}">
+                                            </option>
+                                        </select>
+                                        <button type="submit" class="btn-amarillo">Actualizar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-                <table>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Aprendiz</th>
-                        <th>Tema</th>
-                    </tr>
-
-                    <tr th:each="s : ${sesionesConfirmadas}">
-                        <td th:text="${s.fechaHora}"></td>
-                        <td th:text="${s.aprendiz.usuario.nombre}"></td>
-                        <td th:text="${s.tema}"></td>
-                    </tr>
-                </table>
             </section>
 
-            <!-- ====================== FEEDBACK ====================== -->
+            <!-- FEEDBACK -->
             <section id="feedback" class="view">
                 <h1>Feedback para el Mentor</h1>
-
                 <h2>Comentarios de estudiantes</h2>
 
                 <div id="comentarios">
-
-                    <!-- Si no hay feedback -->
                     <div th:if="${feedbacks.size() == 0}">
                         <p>No tienes comentarios aún.</p>
                     </div>
 
-                    <!-- Comentarios -->
                     <div class="comentario-box" th:each="fb : ${feedbacks}">
-                        
-                        <div class="comentario-avatar"
-                            th:text="${fb.usuario.nombre.substring(0,1)}">
+                        <!-- Foto del estudiante con fallback a avatar -->
+                        <div th:if="${fb.sesion.aprendiz.fotoPerfil != null}" class="comentario-avatar-foto">
+                            <img th:src="${fb.sesion.aprendiz.fotoPerfil}" 
+                                 th:alt="${fb.usuario.nombre}" class="comentario-foto">
                         </div>
-
+                        
+                        <!-- Avatar con inicial si no hay foto -->
+                        <div th:unless="${fb.sesion.aprendiz.fotoPerfil != null}" 
+                             class="comentario-avatar" th:text="${fb.usuario.nombre.substring(0,1)}"></div>
+                        
                         <div class="comentario-content">
-
                             <div class="comentario-header">
-                                <strong th:text="${fb.usuario.nombre}">
-                                </strong>
-
+                                <strong th:text="${fb.usuario.nombre}"></strong>
                                 <span class="comentario-stars"
-                                    th:text="${'★'.repeat(fb.calificacion) + '☆'.repeat(5 - fb.calificacion)}">
-                                </span>
+                                    th:text="${'★'.repeat(fb.calificacion) + '☆'.repeat(5 - fb.calificacion)}"></span>
                             </div>
-
                             <p th:text="${fb.comentario}"></p>
-
                             <span class="comentario-fecha"
-                                th:text="${#temporals.format(fb.sesion.fechaHora, 'dd/MM/yyyy')}">
-                            </span>
-
+                                th:text="${#temporals.format(fb.sesion.fechaHora, 'dd/MM/yyyy')}"></span>
                         </div>
                     </div>
-
                 </div>
             </section>
 
@@ -145,6 +170,23 @@
     </div>
 
     <script th:src="@{/js/app.js}"></script>
+    <script>
+        function mostrarTabla(tipo) {
+            const tipos = ['confirmada', 'pendiente', 'cancelada', 'completada'];
+            tipos.forEach(t => {
+                const tabla = document.getElementById('tabla-' + t);
+                const titulo = document.getElementById('titulo-' + t);
+                if(tabla && titulo) {
+                    tabla.style.display = t === tipo ? 'table' : 'none';
+                    titulo.style.display = t === tipo ? 'block' : 'none';
+                }
+            });
+        }
 
+        // Mostrar la primera tabla por defecto al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            mostrarTabla('confirmada');
+        });
+    </script>
 </body>
 </html>

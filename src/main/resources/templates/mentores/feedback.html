@@ -13,8 +13,14 @@
         <!-- Comentarios -->
         <div class="comentario-box" th:each="fb : ${feedbacks}">
             
-            <!-- Avatar con inicial del nombre -->
-            <div class="comentario-avatar"
+            <!-- Foto del estudiante con fallback a avatar -->
+            <div th:if="${fb.sesion.aprendiz.fotoPerfil != null}" class="comentario-avatar-foto">
+                <img th:src="${fb.sesion.aprendiz.fotoPerfil}" 
+                     th:alt="${fb.usuario.nombre}" class="comentario-foto">
+            </div>
+            
+            <!-- Avatar con inicial del nombre si no hay foto -->
+            <div th:unless="${fb.sesion.aprendiz.fotoPerfil != null}" class="comentario-avatar"
                 th:text="${fb.usuario.nombre.substring(0,1)}">
                 A
             </div>

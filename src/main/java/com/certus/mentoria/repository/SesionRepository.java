@@ -13,5 +13,7 @@ public interface SesionRepository extends JpaRepository<Sesion, Long> {
     List<Sesion> findByAprendizUsuarioId(Long usuarioId);
     List<Sesion> findByMentorIdAndEstado(Long mentorId, Estado estado);
     List<Sesion> findByMentorIdAndEstadoIn(Long mentorId, List<Estado> estados);
+    List<Sesion> findByMentorId(Long mentorId);
+
 
 }

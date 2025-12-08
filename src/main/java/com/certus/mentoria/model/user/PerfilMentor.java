@@ -16,6 +16,8 @@ public class PerfilMentor {
 
     private String disponibilidad;
 
+    private String fotoPerfil; // Ruta de la imagen de perfil
+
     @OneToOne
     @JoinColumn(name = "usuario_id", unique = true)
     private Usuario usuario;
@@ -52,11 +54,20 @@ public class PerfilMentor {
         this.usuario = usuario;
     }
 
+    public String getFotoPerfil() {
+        return fotoPerfil;
+    }
+
+    public void setFotoPerfil(String fotoPerfil) {
+        this.fotoPerfil = fotoPerfil;
+    }
+
     public PerfilMentor(Long id, Especialidad especialidad, String disponibilidad, Usuario usuario) {
         this.id = id;
         this.especialidad = especialidad;
         this.disponibilidad = disponibilidad;
         this.usuario = usuario;
+        this.fotoPerfil = null;
     }
 
     public PerfilMentor() {
@@ -65,7 +76,7 @@ public class PerfilMentor {
     @Override
     public String toString() {
         return "PerfilMentor [id=" + id + ", especialidad=" + especialidad + ", disponibilidad=" + disponibilidad
-                + ", usuario=" + usuario + "]";
+                + ", fotoPerfil=" + fotoPerfil + ", usuario=" + usuario + "]";
     }
 
     

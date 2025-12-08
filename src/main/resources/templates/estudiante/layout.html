@@ -5,45 +5,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${titulo} ?: 'Mentoría Certus'">Mentoría Certus</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 
 <body>
-
     <div class="layout">
 
-        <!-- 🟦 Sidebar -->
         <aside class="sidebar" th:fragment="sidebar">
-            <div>
+                <div>
                 <h2>Mentoría</h2>
                 <nav>
-                    <li><a href="#inicio">🏠Inicio</a></li>
-                    <li><a href="#buscar">🔍 Buscar Mentor</a></li>
-                    <li><a href="#agendar">📅Agendar</a></li>
-                    <li><a href="#mentorias">🧾Mis Mentorías</a></li>
+                    <li><a th:href="@{/}">🏠 Inicio</a></li>
+                    <li><a href="#buscar">🔍 Buscar</a></li>
+                    <li><a href="#agendar">📅 Agendar</a></li>
+                    <li><a href="#mentorias">🧾 Mis Mentorías</a></li>
                 </nav>
-            </div>
-
-            <div class="user">
-                <img th:src="@{/img/user.png}" alt="Usuario">
-                <span th:text="${usuario != null ? usuario.nombre : 'Invitado'}">Usuario</span>
             </div>
         </aside>
 
-        <!-- 🟨 Contenido -->
         <div class="contenido">
-            <header th:fragment="header">
-                <h1 th:text="${titulo} ?: 'Mentoría Certus'">Mentoría Certus</h1>
-                <div class="notif-icon">
-                    🔔
-                    <span id="contadorNotif">3</span>
-                </div>
-            </header>
+            <div th:replace="fragments/topbar :: topbar" th:fragment="header"></div>
 
             <main th:fragment="content"></main>
         </div>
 
     </div>
+
+    <script th:src="@{/js/topbar.js}"></script>
 </body>
 
 </html>

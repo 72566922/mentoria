@@ -1,9 +1,8 @@
 package com.certus.mentoria.service;
 
 import java.time.LocalDateTime;
-
+import java.util.List;
 import org.springframework.stereotype.Service;
-
 import com.certus.mentoria.model.sesion.Estado;
 import com.certus.mentoria.model.sesion.Sesion;
 import com.certus.mentoria.model.user.PerfilAprendiz;
@@ -26,7 +25,19 @@ public class SesionServiceImpl implements SesionService {
         sesion.setAprendiz(aprendiz);
         sesion.setFechaHora(fechaHora);
         sesion.setEstado(Estado.PENDIENTE);
-
         return sesionRepository.save(sesion);
+    }
+
+    @Override
+    public List<Sesion> obtenerSesionesMentor(Long mentorId) {
+        return sesionRepository.findByMentorId(mentorId);
+    }
+
+    @Override
+    public void actualizarEstado(Long sesionId, Estado nuevoEstado) {
+        Sesion sesion = sesionRepository.findById(sesionId)
+            .orElseThrow(() -> new RuntimeException("Sesión no encontrada"));
+        sesion.setEstado(nuevoEstado);
+        sesionRepository.save(sesion);
     }
 }

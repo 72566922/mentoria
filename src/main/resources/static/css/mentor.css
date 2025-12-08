@@ -1,150 +1,420 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
-    background: #e5e5e5;
-    font-family: Arial;
+    background: #f0f2f5;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
 }
 
 .container {
     display: flex;
     height: 100vh;
+    overflow: hidden;
 }
 
 .logo {
-    padding: 20px;
-    font-size: 20px;
+    padding: 20px 15px;
+    font-size: 18px;
+    font-weight: 600;
     background: white;
+    border-bottom: 2px solid #007bff;
+    color: #333;
+    margin: 0;
 }
 
 .sidebar {
-    width: 240px;
+    width: 250px;
     background: white;
-    border-right: 1px solid #ccc;
+    border-right: 2px solid #e0e0e0;
+    overflow-y: auto;
+    box-shadow: 2px 0 4px rgba(0,0,0,0.05);
 }
 
 .menu {
     list-style: none;
     padding: 0;
+    margin: 0;
 }
 
 .menu li {
-    padding: 15px;
+    padding: 16px 20px;
     cursor: pointer;
+    border-left: 4px solid transparent;
+    transition: all 0.3s ease;
+    color: #555;
+    font-weight: 500;
 }
 
 .menu li:hover {
-    background: #f0f0f0;
+    background: #f8f9fa;
+    border-left-color: #007bff;
+    padding-left: 18px;
+}
+
+.menu li a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
 }
 
 .menu .active {
-    background: #dcdcdc;
-    border-radius: 5px;
+    background: #e7f3ff;
+    border-left-color: #007bff;
+    color: #007bff;
 }
 
 .main {
     flex: 1;
     background: white;
-    margin: 20px;
-    border-radius: 10px;
+    margin: 16px;
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    overflow-y: auto;
 }
 
 .header {
-    padding: 15px;
-    border-bottom: 1px solid #ccc;
+    padding: 20px 25px;
+    border-bottom: 2px solid #f0f0f0;
     display: flex;
     justify-content: flex-end;
+    background: #fafbfc;
+    border-radius: 12px 12px 0 0;
+}
+
+.mentor-icon {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
 }
 
 .view {
     display: none;
-    padding: 20px;
+    padding: 25px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.view h1 {
+    margin: 0 0 20px 0;
+    color: #222;
+    font-size: 28px;
+}
+
+.view h2 {
+    margin: 25px 0 15px 0;
+    color: #333;
+    font-size: 20px;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 8px;
+    display: inline-block;
 }
 
 .visible {
-    display: block;
+    display: flex;
+    flex-direction: column;
 }
 
 .cards {
-    display: flex;
-    gap: 15px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+    margin-bottom: 30px;
+    width: 100%;
 }
 
 .card {
-    background: #fafafa;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    background: linear-gradient(135deg, #fafbfc 0%, #f0f2f5 100%);
+    padding: 24px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.card:hover {
+    border-color: #007bff;
+    box-shadow: 0 4px 12px rgba(0,123,255,0.15);
+    transform: translateY(-2px);
+}
+
+.card p {
+    margin: 0 0 10px 0;
+    color: #666;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.card h2 {
+    margin: 0;
+    color: #007bff;
+    font-size: 32px;
+    border: none;
+    padding: 0;
+}
+
+.btn-amarillo-card {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-amarillo {
+    background: #ffc107;
+    color: #333;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 13px;
+}
+
+.btn-amarillo:hover {
+    background: #ffb300;
+    box-shadow: 0 2px 6px rgba(255,193,7,0.3);
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 15px;
+    margin-top: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid #e0e0e0;
 }
 
-th, td {
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
+table thead {
+    background: #f8f9fa;
+}
+
+th {
+    padding: 14px 12px;
+    border-bottom: 2px solid #ddd;
+    text-align: left;
+    font-weight: 600;
+    color: #333;
+    background: #f8f9fa;
+}
+
+td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #eee;
+    color: #555;
+}
+
+tbody tr:hover {
+    background: #f9f9f9;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Estilos para celda de aprendiz con foto */
+.aprendiz-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.aprendiz-foto-mini {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 2px solid #007bff;
+    flex-shrink: 0;
+    background: #f0f2f5;
+}
+
+.aprendiz-foto {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.aprendiz-avatar-mini {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    background: #007bff;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.aprendiz-nombre {
+    color: #555;
+    font-weight: 500;
 }
 
 .perfil-card {
     display: flex;
-    gap: 20px;
+    gap: 30px;
+    align-items: flex-start;
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 10px;
+    border: 2px solid #e0e0e0;
 }
 
-.perfil-card img {
-    width: 140px;
-    height: 140px;
-    border-radius: 5px;
+.perfil-foto-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.perfil-foto {
+    width: 160px;
+    height: 160px;
+    border-radius: 10px;
+    border: 3px solid #007bff;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.form-subir-foto {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.form-subir-foto input[type="file"] {
+    padding: 8px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.btn-subir {
+    background: #007bff;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.btn-subir:hover {
+    background: #0056b3;
+    box-shadow: 0 2px 8px rgba(0,123,255,0.3);
+}
+
+.perfil-info {
+    flex: 1;
+}
+
+.perfil-info p {
+    margin: 12px 0;
+    color: #555;
+    line-height: 1.6;
 }
 
 /* ---------------------
    Comentarios
 -----------------------*/
 .comentario-box {
-    background: #f7f7f7;
-    padding: 15px;
-    margin: 10px 0;
-    border-radius: 8px;
+    background: linear-gradient(135deg, #fafbfc 0%, #f0f2f5 100%);
+    padding: 18px;
+    margin: 14px 0;
+    border-radius: 10px;
     display: flex;
-    gap: 15px;
+    gap: 16px;
     align-items: flex-start;
+    border: 2px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.comentario-box:hover {
+    border-color: #007bff;
+    box-shadow: 0 2px 8px rgba(0,123,255,0.1);
 }
 
 .comentario-avatar {
-    width: 50px;
-    height: 50px;
-    background: #ddd;
-    border-radius: 4px; /* cuadrado */
+    width: 56px;
+    height: 56px;
+    background: #007bff;
+    border-radius: 8px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 22px;
-    color: #555;
+    font-size: 24px;
+    color: white;
     font-weight: bold;
+    flex-shrink: 0;
+}
+
+.comentario-avatar-foto {
+    width: 56px;
+    height: 56px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid #007bff;
+    flex-shrink: 0;
+    background: #f0f2f5;
+}
+
+.comentario-foto {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .comentario-content {
     flex: 1;
 }
 
+.comentario-content p {
+    margin: 8px 0;
+    color: #555;
+    line-height: 1.5;
+}
+
 .comentario-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.comentario-header strong {
+    color: #333;
 }
 
 .comentario-stars {
-    color: gold;
-    font-size: 15px;
-    margin-left: 10px;
+    color: #ffc107;
+    font-size: 16px;
     letter-spacing: 2px;
+    white-space: nowrap;
 }
 
 .comentario-fecha {
     font-size: 12px;
-    color: #555;
+    color: #888;
+    margin-top: 4px;
+    display: block;
 }
 
 
@@ -159,25 +429,212 @@ th, td {
 }
 
 .calendar-header button {
-    padding: 5px 10px;
+    padding: 8px 16px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.calendar-header button:hover {
+    background: #0056b3;
 }
 
 .calendar {
     margin-top: 20px;
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
+    gap: 10px;
 }
 
 .day {
-    background: #f4f4f4;
-    padding: 18px;
+    background: linear-gradient(135deg, #fafbfc 0%, #f0f2f5 100%);
+    padding: 20px;
     text-align: center;
-    border-radius: 6px;
-    border: 1px solid #ddd;
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    color: #333;
 }
 
 .day:hover {
-    background: #e0e0e0;
-    cursor: pointer;
+    background: linear-gradient(135deg, #e7f3ff 0%, #d9ecf7 100%);
+    border-color: #007bff;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,123,255,0.15);
+}
+
+/* ---------------------
+   Responsividad
+-----------------------*/
+@media (max-width: 1024px) {
+    .cards {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+    
+    .perfil-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 2px solid #e0e0e0;
+        max-height: 60px;
+    }
+    
+    .logo {
+        border-bottom: 2px solid #007bff;
+        padding: 12px 15px;
+    }
+    
+    .menu {
+        display: flex;
+        overflow-x: auto;
+    }
+    
+    .menu li {
+        padding: 12px 16px;
+        white-space: nowrap;
+        border-left: none;
+        border-bottom: 4px solid transparent;
+    }
+    
+    .menu li:hover {
+        border-bottom-color: #007bff;
+        border-left: none;
+        padding-left: 16px;
+    }
+    
+    .menu .active {
+        background: transparent;
+        border-left: none;
+        border-bottom-color: #007bff;
+    }
+    
+    .main {
+        margin: 8px;
+        border-radius: 8px;
+    }
+    
+    .view {
+        padding: 16px;
+    }
+    
+    .cards {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .header {
+        padding: 14px 16px;
+    }
+    
+    table {
+        font-size: 12px;
+    }
+    
+    th, td {
+        padding: 10px 8px;
+    }
+    
+    .perfil-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 16px;
+    }
+    
+    .calendar {
+        gap: 8px;
+    }
+    
+    .day {
+        padding: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo {
+        font-size: 16px;
+        padding: 12px 10px;
+    }
+    
+    .view {
+        padding: 12px;
+    }
+    
+    .view h1 {
+        font-size: 22px;
+        margin-bottom: 16px;
+    }
+    
+    .view h2 {
+        font-size: 16px;
+    }
+    
+    .main {
+        margin: 4px;
+    }
+    
+    .card {
+        padding: 16px;
+    }
+    
+    table {
+        font-size: 11px;
+        margin-top: 12px;
+    }
+    
+    th, td {
+        padding: 8px 4px;
+    }
+    
+    .btn-amarillo {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    
+    .perfil-card {
+        gap: 16px;
+    }
+    
+    .perfil-card img {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .comentario-box {
+        padding: 12px;
+        gap: 12px;
+    }
+    
+    .comentario-avatar {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+    }
+    
+    .calendar {
+        grid-template-columns: repeat(7, 1fr);
+        gap: 6px;
+    }
+    
+    .day {
+        padding: 10px;
+        font-size: 12px;
+    }
 }

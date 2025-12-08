@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<!-- Topbar fragment: header with brand, notifications and user avatar/dropdown -->
+<div th:fragment="topbar">
+    <header class="topbar">
+        <div class="topbar-right">
+            <div class="user-dropdown" hidden>
+                <p class="user-name" th:text="${usuario != null ? usuario.nombre : 'Usuario'}">Nombre</p>
+
+                <a th:href="@{/estudiante/inicio}" th:if="${aprendiz != null}">Mi Perfil</a>
+                <a th:href="@{/mentor}" th:if="${perfil != null}">Panel Mentor</a>
+                <a th:href="@{/admin}" th:if="${usuario != null and usuario.roles.?[nombre == 'ADMIN'].size() > 0}">Admin</a>
+
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="btn-logout">Cerrar sesión</button>
+                </form>
+            </div>
+        </div>
+    </header>
+</div>

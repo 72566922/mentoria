@@ -4,94 +4,244 @@
 <head th:replace="estudiante/layout :: head"></head>
 
 <body>
-<div class="layout">
+    <div class="layout">
+        <aside th:replace="estudiante/layout :: sidebar"></aside>
 
-    <!-- Sidebar -->
-    <aside th:replace="estudiante/layout :: sidebar"></aside>
+        <div class="contenido">
+            <div th:replace="fragments/topbar :: topbar"></div>
 
-    <!-- Contenido principal -->
-    <div class="contenido">
-        <header th:replace="estudiante/layout :: header"></header>
+            <main>
 
-        <main>
-
-            <!-- 🔍 Buscar Mentor -->
-            <section id="buscar">
-                <h2>Buscar Mentor</h2>
-                <div class="buscador-box">
-                    <input type="text" placeholder="Ejemplo: UX, programación, marketing...">
-                    <button>Buscar</button>
-                </div>
-            </section>
-
-            <!-- 📅 Agendar nueva mentoría -->
-            <section id="agendar">
-                <h2>Agendar nueva mentoría</h2>
-
-                <form th:action="@{/estudiante/agendar}" method="post">
-                    <label>Selecciona mentor</label>
-                    <select name="mentorId" required>
-                        <option value="">-- Elegir --</option>
-                        <option th:each="mentor : ${mentores}"
-                                th:value="${mentor.id}"
-                                th:text="${mentor.usuario.nombre + ' - ' + mentor.especialidad.nombre}">
-                        </option>
-                    </select>
-
-                    <label>Tema</label>
-                    <input type="text" name="tema" placeholder="Ejemplo: Figma, React, SEO..." required>
-
-                    <label>Fecha</label>
-                    <input type="date" name="fecha" required>
-
-                    <label>Hora</label>
-                    <input type="time" name="hora" required>
-
-                    <button type="submit">Agendar</button>
-                </form>
-            </section>
-
-            <!-- 📋 Mentorías Agendadas -->
-            <section id="mentorias">
-                <h2>Mentorías Agendadas</h2>
-
-                <div th:if="${#lists.isEmpty(sesiones)}">
-                    <p>No tienes mentorías agendadas aún.</p>
-                </div>
-
-                <div th:each="s : ${sesiones}">
-                    <div class="card">
-                        <p><strong th:text="${s.tema}">Tema</strong></p>
-                        <p>
-                            👨‍🏫 <span th:text="${s.mentor.usuario.nombre}"></span> <br>
-                            📅 <span th:text="${#temporals.format(s.fechaHora, 'yyyy-MM-dd')}"></span> 🕒 
-                            <span th:text="${#temporals.format(s.fechaHora, 'HH:mm')}"></span>
-                        </p>
-                        <form th:action="@{/estudiante/cancelar}" method="post">
-                            <input type="hidden" th:value="${s.id}" name="id">
-                            <button type="submit" class="btn-rojo">Cancelar</button>
-                        </form>
+                <!-- 👤 Mi Perfil -->
+                <section id="perfil" class="section-card">
+                    <h2>Mi Perfil</h2>
+                    
+                    <div class="perfil-container">
+                        <div class="perfil-foto-section">
+                            <div class="perfil-foto-box">
+                                <img th:src="${aprendiz.fotoPerfil != null ? aprendiz.fotoPerfil : '/img/default-user.png'}" 
+                                     alt="Mi foto de perfil" class="perfil-foto">
+                            </div>
+                            
+                            <form th:action="@{/estudiante/subirFoto}" method="post" enctype="multipart/form-data" class="form-subir-foto">
+                                <input type="file" name="foto" accept="image/*" required>
+                                <button type="submit" class="btn-subir">Subir Foto</button>
+                            </form>
+                        </div>
+                        
+                        <div class="perfil-info">
+                            <p class="perfil-nombre" th:text="${usuario.nombre}"></p>
+                            <p class="perfil-email" th:text="${usuario.email}"></p>
+                            <div th:if="${aprendiz.carrera}" class="perfil-carrera">
+                                <span class="label">Carrera:</span>
+                                <span th:text="${aprendiz.carrera.nombre}"></span>
+                            </div>
+                            <div th:if="${aprendiz.nivelAcademico}" class="perfil-nivel">
+                                <span class="label">Nivel:</span>
+                                <span th:text="${aprendiz.nivelAcademico}"></span>
+                            </div>
+                            <div th:if="${aprendiz.objetivo}" class="perfil-objetivo">
+                                <span class="label">Objetivo:</span>
+                                <span th:text="${aprendiz.objetivo}"></span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-        </main>
+                <!-- 🔍 Buscar Mentor -->
+                <section id="buscar" class="section-card">
+                    <h2>Buscar Mentor</h2>
+                    <div class="buscador-box">
+                        <input type="text" placeholder="Ejemplo: UX, programación, marketing...">
+                        <button>Buscar</button>
+                    </div>
+                </section>
+
+                <!-- 📅 Agendar nueva mentoría -->
+                <section id="agendar" class="section-card">
+                    <h2>Agendar nueva mentoría</h2>
+
+                    <form id="agendarForm" th:action="@{/estudiante/agendar}" method="post" class="formulario">
+                        <div class="form-group">
+                            <label for="mentorSelect">Selecciona mentor</label>
+                            <div class="mentor-selector-wrapper">
+                                <select id="mentorSelect" name="mentorId" required>
+                                    <option value="">-- Elegir --</option>
+                                    <option th:each="mentor : ${mentores}" 
+                                        th:value="${mentor.id}"
+                                        th:data-nombre="${mentor.usuario.nombre}"
+                                        th:data-especialidad="${mentor.especialidad.nombre}"
+                                        th:data-foto="${mentor.fotoPerfil != null ? mentor.fotoPerfil : '/img/default-user.png'}"
+                                        th:text="${mentor.usuario.nombre + ' - ' + mentor.especialidad.nombre}">
+                                    </option>
+                                </select>
+                                <div id="mentorPreview" class="mentor-preview"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="temaSelect">Tema</label>
+                            <select id="temaSelect" name="temaIds" multiple required>
+                                <option value="">-- Primero elige un mentor --</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="fechaInput">Fecha</label>
+                                <input type="date" id="fechaInput" name="fecha" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="horaInput">Hora</label>
+                                <input type="time" id="horaInput" name="hora" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit">Agendar Mentoría</button>
+                    </form>
+                </section>
+
+                <!-- 📋 Mentorías Agendadas -->
+                <section id="mentorias" class="section-card">
+                    <h2>Mentorías Agendadas</h2>
+
+                    <div th:if="${#lists.isEmpty(sesiones)}" class="empty-state">
+                        <p>No tienes mentorías agendadas aún.</p>
+                    </div>
+
+                    <div class="mentorías-grid" th:unless="${#lists.isEmpty(sesiones)}">
+                        <div class="card-mentoria" th:each="s : ${sesiones}">
+                            <div class="card-header">
+                                <div class="card-mentor-info">
+                                    <img th:src="${s.mentor.fotoPerfil != null ? s.mentor.fotoPerfil : '/img/default-user.png'}" 
+                                         alt="Foto del mentor" class="card-mentor-foto">
+                                    <div>
+                                        <p class="card-mentor-nombre" th:text="${s.mentor.usuario.nombre}"></p>
+                                        <p class="card-mentor-especialidad" th:text="${s.mentor.especialidad.nombre}"></p>
+                                    </div>
+                                </div>
+                                <strong class="card-title">
+                                    <span th:each="t, stat : ${s.temas}" th:text="${t.nombre + (stat.last ? '' : ', ')}"></span>
+                                </strong>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="card-personas">
+                                    <div class="persona-item">
+                                        <span class="persona-label">Mentor</span>
+                                        <div class="persona-foto-box">
+                                            <img th:src="${s.mentor.fotoPerfil != null ? s.mentor.fotoPerfil : '/img/default-user.png'}" 
+                                                 th:alt="${s.mentor.usuario.nombre}" class="persona-foto">
+                                        </div>
+                                        <p class="persona-nombre" th:text="${s.mentor.usuario.nombre}"></p>
+                                    </div>
+                                    
+                                    <div class="persona-separador">↔</div>
+                                    
+                                    <div class="persona-item">
+                                        <span class="persona-label">Tú</span>
+                                        <div class="persona-foto-box">
+                                            <img th:src="${aprendiz.fotoPerfil != null ? aprendiz.fotoPerfil : '/img/default-user.png'}" 
+                                                 th:alt="${usuario.nombre}" class="persona-foto">
+                                        </div>
+                                        <p class="persona-nombre" th:text="${usuario.nombre}"></p>
+                                    </div>
+                                </div>
+                                
+                                <p class="mentor-info">
+                                    <span class="icon">👨‍🏫</span>
+                                    <span th:text="${s.mentor.usuario.nombre}"></span>
+                                </p>
+                                <p class="fecha-info">
+                                    <span class="icon">📅</span>
+                                    <span th:text="${#temporals.format(s.fechaHora, 'dd/MM/yyyy')}"></span>
+                                    <span class="icon">🕒</span>
+                                    <span th:text="${#temporals.format(s.fechaHora, 'HH:mm')}"></span>
+                                </p>
+                                <p class="estado-badge" th:classappend="'estado-' + ${s.estado.name().toLowerCase()}"
+                                    th:text="${s.estado}"></p>
+                            </div>
+
+                            <div class="card-footer">
+                                <form th:action="@{/estudiante/cancelar}" method="post">
+                                    <input type="hidden" th:value="${s.id}" name="id">
+                                    <button type="submit" class="btn-cancelar">Cancelar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+
     </div>
 
-</div>
+    <script>
+        // Scroll suave a secciones
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener("click", function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute("href"));
+                if (target) {
+                    target.scrollIntoView({ behavior: "smooth" });
+                }
+            });
+        });
 
-<!-- 🌐 Scroll suave -->
-<script>
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener("click", function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute("href"));
-        if (target) {
-            target.scrollIntoView({ behavior: "smooth" });
-        }
-    });
-});
-</script>
+        // Cargar temas según mentor seleccionado
+        const mentorSelect = document.getElementById('mentorSelect');
+        const temaSelect = document.getElementById('temaSelect');
+        const mentorPreview = document.getElementById('mentorPreview');
+
+        mentorSelect.addEventListener('change', () => {
+            const mentorId = mentorSelect.value;
+            temaSelect.innerHTML = '<option value="">Cargando...</option>';
+            mentorPreview.innerHTML = '';
+
+            if (mentorId) {
+                // Buscar el mentor en las opciones del select
+                const selectedOption = mentorSelect.options[mentorSelect.selectedIndex];
+                const mentorNombre = selectedOption.dataset.nombre || selectedOption.text;
+                const mentorEspecialidad = selectedOption.dataset.especialidad || '';
+                const mentorFoto = selectedOption.dataset.foto || '/img/default-user.png';
+
+                // Mostrar preview del mentor seleccionado
+                if (mentorNombre) {
+                    mentorPreview.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #f0f2f5; border-radius: 8px;">
+                            <img src="${mentorFoto}" alt="${mentorNombre}" style="width: 48px; height: 48px; border-radius: 6px; object-fit: cover;">
+                            <div>
+                                <p style="margin: 0; font-weight: 600; font-size: 14px;">${mentorNombre}</p>
+                                <p style="margin: 4px 0 0 0; font-size: 12px; color: #666;">${mentorEspecialidad}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Cargar temas
+                fetch(`/estudiante/temas_por_mentor?mentorId=${mentorId}`)
+                    .then(response => response.json())
+                    .then(temas => {
+                        temaSelect.innerHTML = '<option value="">-- Elegir --</option>';
+                        temas.forEach(t => {
+                            const option = document.createElement('option');
+                            option.value = t.id;
+                            option.textContent = t.nombre + ' (' + t.especialidad + ')';
+                            temaSelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error cargando temas:', error);
+                        temaSelect.innerHTML = '<option value="">Error al cargar temas</option>';
+                    });
+            } else {
+                temaSelect.innerHTML = '<option value="">-- Primero elige un mentor --</option>';
+            }
+        });
+    </script>
 
 </body>
+
 </html>

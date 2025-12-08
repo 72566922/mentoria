@@ -12,6 +12,7 @@ public class PerfilAprendiz {
 
     private String objetivo;
     private String nivelAcademico;
+    private String fotoPerfil;
     @ManyToOne
     @JoinColumn(name = "carrera_id")
     private Carrera carrera;
@@ -28,6 +29,7 @@ public class PerfilAprendiz {
         this.nivelAcademico = nivelAcademico;
         this.carrera = carrera;
         this.usuario = usuario;
+        this.fotoPerfil = null;
     }
 
     public PerfilAprendiz() {
@@ -73,10 +75,18 @@ public class PerfilAprendiz {
         this.usuario = usuario;
     }
 
+    public String getFotoPerfil() {
+        return fotoPerfil;
+    }
+
+    public void setFotoPerfil(String fotoPerfil) {
+        this.fotoPerfil = fotoPerfil;
+    }
+
     @Override
     public String toString() {
         return "PerfilAprendiz [id=" + id + ", objetivo=" + objetivo + ", nivelAcademico=" + nivelAcademico
-                + ", carrera=" + carrera + ", usuario=" + usuario + "]";
+                + ", carrera=" + carrera + ", usuario=" + usuario + ", fotoPerfil=" + fotoPerfil + "]";
     }
 
     

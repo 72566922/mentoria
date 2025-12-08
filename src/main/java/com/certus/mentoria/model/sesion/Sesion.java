@@ -1,6 +1,7 @@
 package com.certus.mentoria.model.sesion;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.certus.mentoria.model.user.PerfilAprendiz;
 import com.certus.mentoria.model.user.PerfilMentor;
@@ -27,15 +28,16 @@ public class Sesion {
     @JoinColumn(name = "aprendiz_id")
     private PerfilAprendiz aprendiz;
 
-    @Column(nullable = false)
-    private String tema;
+    @ManyToMany
+    @JoinTable(name = "sesion_tema", joinColumns = @JoinColumn(name = "sesion_id"), inverseJoinColumns = @JoinColumn(name = "tema_id"))
+    private List<Tema> temas;
 
-    public String getTema() {
-        return tema;
+    public void setTemas(List<Tema> temas) {
+        this.temas = temas;
     }
 
-    public void setTema(String tema) {
-        this.tema = tema;
+    public List<Tema> getTemas() {
+        return temas;
     }
 
     public Long getId() {
@@ -82,21 +84,19 @@ public class Sesion {
     }
 
     public Sesion(Long id, LocalDateTime fechaHora, Estado estado, PerfilMentor mentor, PerfilAprendiz aprendiz,
-            String tema) {
+            List<Tema> temas) {
         this.id = id;
         this.fechaHora = fechaHora;
         this.estado = estado;
         this.mentor = mentor;
         this.aprendiz = aprendiz;
-        this.tema = tema;
+        this.temas = temas;
     }
 
     @Override
     public String toString() {
         return "Sesion [id=" + id + ", fechaHora=" + fechaHora + ", estado=" + estado + ", mentor=" + mentor
-                + ", aprendiz=" + aprendiz + ", tema=" + tema + "]";
+                + ", aprendiz=" + aprendiz + ", temas=" + temas + "]";
     }
-
-    
 
 }
