@@ -4,12 +4,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,6 +31,7 @@ import com.certus.mentoria.model.sesion.Sesion;
 import com.certus.mentoria.model.user.Especialidad;
 import com.certus.mentoria.model.user.PerfilMentor;
 import com.certus.mentoria.repository.UsuarioRepository;
+import com.certus.mentoria.service.GoogleCalendarService;
 import com.certus.mentoria.service.SesionService;
 import com.certus.mentoria.repository.EspecialidadRepository;
 import com.certus.mentoria.repository.FeedBackRepository;
@@ -44,20 +50,25 @@ public class MentorController {
 
         private final EspecialidadRepository especialidadRepository;
 
-        public MentorController(
-                        SesionService sesionService,
+        private final GoogleCalendarService googleCalendarService;
+        private final OAuth2AuthorizedClientService authorizedClientService;
+
+        public MentorController(SesionService sesionService,
                         UsuarioRepository usuarioRepository,
                         PerfilMentorRepository perfilMentorRepository,
                         SesionRepository sesionRepository,
                         FeedBackRepository feedBackRepository,
-                        EspecialidadRepository especialidadRepository) {
-
+                        EspecialidadRepository especialidadRepository,
+                        GoogleCalendarService googleCalendarService,
+                        OAuth2AuthorizedClientService authorizedClientService) {
                 this.sesionService = sesionService;
                 this.usuarioRepository = usuarioRepository;
                 this.perfilMentorRepository = perfilMentorRepository;
                 this.sesionRepository = sesionRepository;
                 this.feedBackRepository = feedBackRepository;
                 this.especialidadRepository = especialidadRepository;
+                this.googleCalendarService = googleCalendarService;
+                this.authorizedClientService = authorizedClientService;
         }
 
         @GetMapping
@@ -128,8 +139,16 @@ public class MentorController {
         }
 
         @PostMapping("/cambiarEstado")
-        public String cambiarEstado(@RequestParam Long sesionId, @RequestParam Estado nuevoEstado) {
+        public String cambiarEstado(@RequestParam Long sesionId,
+                        @RequestParam Estado nuevoEstado,
+                        @AuthenticationPrincipal DefaultOidcUser principal) throws Exception {
+
                 sesionService.actualizarEstado(sesionId, nuevoEstado);
+
+                if (nuevoEstado == Estado.CONFIRMADA) {
+                        googleCalendarService.crearEventoSesion(sesionRepository.findById(sesionId).get(), principal);
+                }
+
                 return "redirect:/mentor";
         }
 
@@ -196,6 +215,24 @@ public class MentorController {
 
         private String getExtension(String filename) {
                 return filename.substring(filename.lastIndexOf("."));
+        }
+
+        @PostMapping("/confirmarSesion")
+        public String confirmarSesion(
+                        @RequestParam Long sesionId,
+                        @AuthenticationPrincipal OAuth2User principal) throws Exception {
+
+                // 1️⃣ Actualizar estado de la sesión
+                Sesion sesion = sesionRepository.findById(sesionId)
+                                .orElseThrow(() -> new RuntimeException("Sesión no encontrada"));
+                sesion.setEstado(Estado.CONFIRMADA);
+                sesionRepository.save(sesion);
+
+                // 2️⃣ Aquí puedes agregar la integración con Google Calendar
+                // Por ejemplo, usando un servicio GoogleCalendarService que hayas creado
+                // googleCalendarService.crearEvento(sesion, principal);
+
+                return "redirect:/mentor"; // O "/mentor/dashboard"
         }
 
 }
