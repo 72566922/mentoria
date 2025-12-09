@@ -25,9 +25,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.certus.mentoria.model.sesion.Estado;
 import com.certus.mentoria.model.sesion.Sesion;
 import com.certus.mentoria.model.sesion.Tema;
+import com.certus.mentoria.model.user.Carrera;
 import com.certus.mentoria.model.user.PerfilAprendiz;
 import com.certus.mentoria.model.user.PerfilMentor;
 import com.certus.mentoria.model.user.Usuario;
+import com.certus.mentoria.repository.CarreraRepository;
 import com.certus.mentoria.repository.PerfilAprendizRepository;
 import com.certus.mentoria.repository.PerfilMentorRepository;
 import com.certus.mentoria.repository.SesionRepository;
@@ -45,19 +47,22 @@ public class EstudianteController {
     private final PerfilAprendizRepository perfilAprendizRepository;
     private final SesionRepository sesionRepository;
     private final TemaRepository temaRepository;
+    private final CarreraRepository carreraRepository;
 
     public EstudianteController(
             PerfilMentorRepository perfilMentorRepository,
             UsuarioRepository usuarioRepository,
             PerfilAprendizRepository perfilAprendizRepository,
             SesionRepository sesionRepository,
-            TemaRepository temaRepository) {
+            TemaRepository temaRepository,
+            CarreraRepository carreraRepository) {
 
         this.perfilMentorRepository = perfilMentorRepository;
         this.usuarioRepository = usuarioRepository;
         this.perfilAprendizRepository = perfilAprendizRepository;
         this.sesionRepository = sesionRepository;
         this.temaRepository = temaRepository;
+        this.carreraRepository = carreraRepository;
     }
 
     @GetMapping("/inicio")
@@ -69,15 +74,17 @@ public class EstudianteController {
 
         model.addAttribute("usuario", usuario);
 
-        Long userId = usuario.getId();
-
         PerfilAprendiz aprendiz = perfilAprendizRepository.findByUsuario(usuario);
         model.addAttribute("aprendiz", aprendiz);
+
+        // Lista de todas las carreras para el select cuando edite
+        List<Carrera> carreras = carreraRepository.findAll();
+        model.addAttribute("carreras", carreras);
 
         List<PerfilMentor> mentores = perfilMentorRepository.findAllMentores();
         model.addAttribute("mentores", mentores);
 
-        List<Sesion> sesiones = sesionRepository.findByAprendizUsuarioId(userId);
+        List<Sesion> sesiones = sesionRepository.findByAprendizUsuarioId(usuario.getId());
         model.addAttribute("sesiones", sesiones);
 
         List<Tema> temas = temaRepository.findAll();
@@ -117,8 +124,6 @@ public class EstudianteController {
         System.out.println("hora = " + hora);
         System.out.println("ID del aprendiz = " + aprendiz.getId());
 
-        
-
         Sesion sesion = new Sesion();
         sesion.setMentor(mentor);
         sesion.setAprendiz(aprendiz);
@@ -130,7 +135,6 @@ public class EstudianteController {
 
         return "redirect:/estudiante/inicio";
     }
-
 
     @GetMapping("/temas_por_mentor")
     @ResponseBody
@@ -156,36 +160,36 @@ public class EstudianteController {
     public String subirFoto(
             @RequestParam("foto") MultipartFile file,
             @AuthenticationPrincipal OAuth2User principal) {
-        
+
         if (file.isEmpty()) {
             return "redirect:/estudiante/inicio?error=archivo_vacio";
         }
-        
+
         try {
             String email = principal.getAttribute("email");
             Usuario usuario = usuarioRepository.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-            
+
             PerfilAprendiz aprendiz = perfilAprendizRepository.findByUsuario(usuario);
-            
+
             // Crear directorio si no existe
             Path uploadDir = Paths.get("src/main/resources/static/uploads");
             if (!Files.exists(uploadDir)) {
                 Files.createDirectories(uploadDir);
             }
-            
+
             // Generar nombre único
             String extension = getExtension(file.getOriginalFilename());
             String filename = "aprendiz_" + aprendiz.getId() + "_" + UUID.randomUUID() + "." + extension;
             Path filePath = uploadDir.resolve(filename);
-            
+
             // Guardar archivo
             Files.copy(file.getInputStream(), filePath);
-            
+
             // Actualizar perfil
             aprendiz.setFotoPerfil("/uploads/" + filename);
             perfilAprendizRepository.save(aprendiz);
-            
+
             return "redirect:/estudiante/inicio";
         } catch (IOException e) {
             e.printStackTrace();
@@ -198,6 +202,29 @@ public class EstudianteController {
             return "jpg";
         }
         return filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+    }
+
+    @PostMapping("/editarPerfil")
+    public String editarPerfil(@RequestParam String carrera,
+            @RequestParam String nivelAcademico,
+            @RequestParam String objetivo,
+            @AuthenticationPrincipal OAuth2User principal) {
+
+        String email = principal.getAttribute("email");
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        PerfilAprendiz perfil = perfilAprendizRepository.findByUsuario(usuario);
+
+        perfil.setNivelAcademico(nivelAcademico);
+        perfil.setObjetivo(objetivo);
+
+        // Buscar la entidad Carrera según el nombre
+        carreraRepository.findByNombre(carrera).ifPresent(perfil::setCarrera);
+
+        perfilAprendizRepository.save(perfil);
+
+        return "redirect:/estudiante/inicio";
     }
 
 }

@@ -23,9 +23,11 @@ import com.certus.mentoria.model.user.Usuario;
 import com.certus.mentoria.model.feedback.Feedback;
 import com.certus.mentoria.model.sesion.Estado;
 import com.certus.mentoria.model.sesion.Sesion;
+import com.certus.mentoria.model.user.Especialidad;
 import com.certus.mentoria.model.user.PerfilMentor;
 import com.certus.mentoria.repository.UsuarioRepository;
 import com.certus.mentoria.service.SesionService;
+import com.certus.mentoria.repository.EspecialidadRepository;
 import com.certus.mentoria.repository.FeedBackRepository;
 import com.certus.mentoria.repository.PerfilMentorRepository;
 import com.certus.mentoria.repository.SesionRepository;
@@ -40,18 +42,22 @@ public class MentorController {
         private final SesionRepository sesionRepository;
         private final FeedBackRepository feedBackRepository;
 
+        private final EspecialidadRepository especialidadRepository;
+
         public MentorController(
                         SesionService sesionService,
                         UsuarioRepository usuarioRepository,
                         PerfilMentorRepository perfilMentorRepository,
                         SesionRepository sesionRepository,
-                        FeedBackRepository feedBackRepository) {
+                        FeedBackRepository feedBackRepository,
+                        EspecialidadRepository especialidadRepository) {
 
-                this.sesionService = sesionService; // ✅ Ahora sí
+                this.sesionService = sesionService;
                 this.usuarioRepository = usuarioRepository;
                 this.perfilMentorRepository = perfilMentorRepository;
                 this.sesionRepository = sesionRepository;
                 this.feedBackRepository = feedBackRepository;
+                this.especialidadRepository = especialidadRepository;
         }
 
         @GetMapping
@@ -73,7 +79,7 @@ public class MentorController {
 
                 // 4️⃣ Sesiones por estado
                 List<Sesion> sesiones = sesionRepository.findByMentorId(mentorId);
-                
+
                 Map<String, List<Sesion>> sesionesPorEstado = new HashMap<>();
                 for (Estado estado : Estado.values()) {
                         sesionesPorEstado.put(estado.name().toLowerCase(),
@@ -82,6 +88,8 @@ public class MentorController {
 
                 // 5️⃣ Feedback del mentor
                 List<Feedback> feedbacks = feedBackRepository.findBySesionMentorId(mentorId);
+                List<Especialidad> especialidades = especialidadRepository.findAll();
+                model.addAttribute("especialidades", especialidades);
 
                 // 6️⃣ Enviar a la vista
                 model.addAttribute("usuario", usuario);
@@ -126,13 +134,13 @@ public class MentorController {
         }
 
         @PostMapping("/subirFoto")
-        public String subirFoto(@RequestParam("foto") MultipartFile foto, 
-                                @AuthenticationPrincipal OAuth2User principal) {
+        public String subirFoto(@RequestParam("foto") MultipartFile foto,
+                        @AuthenticationPrincipal OAuth2User principal) {
                 try {
                         String email = principal.getAttribute("email");
                         Usuario usuario = usuarioRepository.findByEmail(email)
                                         .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-                        
+
                         PerfilMentor perfil = perfilMentorRepository.findByUsuarioId(usuario.getId())
                                         .orElseThrow(() -> new RuntimeException("Perfil de mentor no encontrado"));
 
@@ -142,9 +150,9 @@ public class MentorController {
                         }
 
                         // Crear nombre único para la imagen
-                        String nombreArchivo = "mentor_" + perfil.getId() + "_" + UUID.randomUUID() + 
-                                             getExtension(foto.getOriginalFilename());
-                        
+                        String nombreArchivo = "mentor_" + perfil.getId() + "_" + UUID.randomUUID() +
+                                        getExtension(foto.getOriginalFilename());
+
                         // Guardar en carpeta uploads
                         Path rutaGuardado = Paths.get("src/main/resources/static/uploads/" + nombreArchivo);
                         Files.createDirectories(rutaGuardado.getParent());
@@ -157,8 +165,32 @@ public class MentorController {
                 } catch (IOException e) {
                         e.printStackTrace();
                 }
-                
-                
+
+                return "redirect:/mentor";
+        }
+
+        @PostMapping("/editarPerfil")
+        public String editarPerfil(
+                        @RequestParam String disponibilidad,
+                        @RequestParam Long especialidadId,
+                        @AuthenticationPrincipal OAuth2User principal) {
+
+                String email = principal.getAttribute("email");
+                Usuario usuario = usuarioRepository.findByEmail(email)
+                                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+                PerfilMentor perfil = perfilMentorRepository.findByUsuarioId(usuario.getId())
+                                .orElseThrow(() -> new RuntimeException("Perfil de mentor no encontrado"));
+
+                // Actualizar disponibilidad
+                perfil.setDisponibilidad(disponibilidad);
+
+                // Actualizar especialidad
+                especialidadRepository.findById(especialidadId)
+                                .ifPresent(perfil::setEspecialidad);
+
+                perfilMentorRepository.save(perfil);
+
                 return "redirect:/mentor";
         }
 

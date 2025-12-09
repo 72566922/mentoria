@@ -15,27 +15,32 @@
                 <!-- 👤 Mi Perfil -->
                 <section id="perfil" class="section-card">
                     <h2>Mi Perfil</h2>
-                    
+
                     <div class="perfil-container">
                         <div class="perfil-foto-section">
                             <div class="perfil-foto-box">
-                                <img th:src="${aprendiz.fotoPerfil != null ? aprendiz.fotoPerfil : '/img/default-user.png'}" 
-                                     alt="Mi foto de perfil" class="perfil-foto">
+                                <img th:src="${aprendiz.fotoPerfil != null ? aprendiz.fotoPerfil : '/img/default-user.png'}"
+                                    alt="Mi foto de perfil" class="perfil-foto">
                             </div>
-                            
-                            <form th:action="@{/estudiante/subirFoto}" method="post" enctype="multipart/form-data" class="form-subir-foto">
+
+                            <form th:action="@{/estudiante/subirFoto}" method="post" enctype="multipart/form-data"
+                                class="form-subir-foto">
                                 <input type="file" name="foto" accept="image/*" required>
                                 <button type="submit" class="btn-subir">Subir Foto</button>
                             </form>
                         </div>
-                        
+
                         <div class="perfil-info">
                             <p class="perfil-nombre" th:text="${usuario.nombre}"></p>
                             <p class="perfil-email" th:text="${usuario.email}"></p>
-                            <div th:if="${aprendiz.carrera}" class="perfil-carrera">
+
+                            <!-- Carrera actual -->
+                            <div class="perfil-carrera">
                                 <span class="label">Carrera:</span>
-                                <span th:text="${aprendiz.carrera.nombre}"></span>
+                                <span th:text="${aprendiz.carrera != null ? aprendiz.carrera.nombre : '-'}"></span>
                             </div>
+
+                            <!-- Nivel académico y objetivo -->
                             <div th:if="${aprendiz.nivelAcademico}" class="perfil-nivel">
                                 <span class="label">Nivel:</span>
                                 <span th:text="${aprendiz.nivelAcademico}"></span>
@@ -44,7 +49,35 @@
                                 <span class="label">Objetivo:</span>
                                 <span th:text="${aprendiz.objetivo}"></span>
                             </div>
+
+                            <!-- Botón para editar -->
+                            <button id="btnEditarPerfil" type="button">Editar Perfil</button>
+
+                            <!-- Formulario oculto inicialmente -->
+                            <form id="formEditarPerfil" th:action="@{/estudiante/editarPerfil}" method="post"
+                                style="display: none; margin-top: 12px;">
+                                <div>
+                                    <label>Carrera:</label>
+                                    <select name="carrera" required>
+                                        <option th:each="c : ${carreras}" th:value="${c.nombre}" 
+                                                th:text="${c.nombre}" 
+                                                th:selected="${aprendiz.carrera != null} ? ${c.id} == ${aprendiz.carrera.id} : false">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Nivel Académico:</label>
+                                    <input type="text" name="nivelAcademico" th:value="${aprendiz.nivelAcademico}">
+                                </div>
+                                <div>
+                                    <label>Objetivo:</label>
+                                    <input type="text" name="objetivo" th:value="${aprendiz.objetivo}">
+                                </div>
+                                <button type="submit">Guardar</button>
+                                <button type="button" id="btnCancelarEdicion">Cancelar</button>
+                            </form>
                         </div>
+
                     </div>
                 </section>
 
@@ -67,8 +100,7 @@
                             <div class="mentor-selector-wrapper">
                                 <select id="mentorSelect" name="mentorId" required>
                                     <option value="">-- Elegir --</option>
-                                    <option th:each="mentor : ${mentores}" 
-                                        th:value="${mentor.id}"
+                                    <option th:each="mentor : ${mentores}" th:value="${mentor.id}"
                                         th:data-nombre="${mentor.usuario.nombre}"
                                         th:data-especialidad="${mentor.especialidad.nombre}"
                                         th:data-foto="${mentor.fotoPerfil != null ? mentor.fotoPerfil : '/img/default-user.png'}"
@@ -114,11 +146,12 @@
                         <div class="card-mentoria" th:each="s : ${sesiones}">
                             <div class="card-header">
                                 <div class="card-mentor-info">
-                                    <img th:src="${s.mentor.fotoPerfil != null ? s.mentor.fotoPerfil : '/img/default-user.png'}" 
-                                         alt="Foto del mentor" class="card-mentor-foto">
+                                    <img th:src="${s.mentor.fotoPerfil != null ? s.mentor.fotoPerfil : '/img/default-user.png'}"
+                                        alt="Foto del mentor" class="card-mentor-foto">
                                     <div>
                                         <p class="card-mentor-nombre" th:text="${s.mentor.usuario.nombre}"></p>
-                                        <p class="card-mentor-especialidad" th:text="${s.mentor.especialidad.nombre}"></p>
+                                        <p class="card-mentor-especialidad" th:text="${s.mentor.especialidad.nombre}">
+                                        </p>
                                     </div>
                                 </div>
                                 <strong class="card-title">
@@ -131,24 +164,24 @@
                                     <div class="persona-item">
                                         <span class="persona-label">Mentor</span>
                                         <div class="persona-foto-box">
-                                            <img th:src="${s.mentor.fotoPerfil != null ? s.mentor.fotoPerfil : '/img/default-user.png'}" 
-                                                 th:alt="${s.mentor.usuario.nombre}" class="persona-foto">
+                                            <img th:src="${s.mentor.fotoPerfil != null ? s.mentor.fotoPerfil : '/img/default-user.png'}"
+                                                th:alt="${s.mentor.usuario.nombre}" class="persona-foto">
                                         </div>
                                         <p class="persona-nombre" th:text="${s.mentor.usuario.nombre}"></p>
                                     </div>
-                                    
+
                                     <div class="persona-separador">↔</div>
-                                    
+
                                     <div class="persona-item">
                                         <span class="persona-label">Tú</span>
                                         <div class="persona-foto-box">
-                                            <img th:src="${aprendiz.fotoPerfil != null ? aprendiz.fotoPerfil : '/img/default-user.png'}" 
-                                                 th:alt="${usuario.nombre}" class="persona-foto">
+                                            <img th:src="${aprendiz.fotoPerfil != null ? aprendiz.fotoPerfil : '/img/default-user.png'}"
+                                                th:alt="${usuario.nombre}" class="persona-foto">
                                         </div>
                                         <p class="persona-nombre" th:text="${usuario.nombre}"></p>
                                     </div>
                                 </div>
-                                
+
                                 <p class="mentor-info">
                                     <span class="icon">👨‍🏫</span>
                                     <span th:text="${s.mentor.usuario.nombre}"></span>
@@ -201,7 +234,6 @@
             mentorPreview.innerHTML = '';
 
             if (mentorId) {
-                // Buscar el mentor en las opciones del select
                 const selectedOption = mentorSelect.options[mentorSelect.selectedIndex];
                 const mentorNombre = selectedOption.dataset.nombre || selectedOption.text;
                 const mentorEspecialidad = selectedOption.dataset.especialidad || '';
@@ -239,6 +271,21 @@
             } else {
                 temaSelect.innerHTML = '<option value="">-- Primero elige un mentor --</option>';
             }
+        });
+
+        // Mostrar/ocultar formulario de edición
+        const btnEditar = document.getElementById('btnEditarPerfil');
+        const btnCancelar = document.getElementById('btnCancelarEdicion');
+        const formEditar = document.getElementById('formEditarPerfil');
+
+        btnEditar.addEventListener('click', () => {
+            formEditar.style.display = 'block';
+            btnEditar.style.display = 'none';
+        });
+
+        btnCancelar.addEventListener('click', () => {
+            formEditar.style.display = 'none';
+            btnEditar.style.display = 'inline-block';
         });
     </script>
 
